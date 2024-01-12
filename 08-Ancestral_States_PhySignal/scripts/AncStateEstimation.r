@@ -5,6 +5,7 @@
 
 library(phytools)
 library(geiger)
+library(geomorph)
 
 ######Discrete Anc. State Estimation
 ## Read data & tree
@@ -153,3 +154,18 @@ plot(a,anc.est,xlab="true values",
      ylab="estimated states using informative prior")
 lines(range(c(x,a)),range(c(x,a)),lty="dashed",col="red")
 title("estimated using informative prior")
+
+## ---- PhySignal ----
+
+#Read Data from Mahler et al. 2010. Evolution
+tree<-read.tree("../data/anole.svl.tre",tree.names=T)
+SVL<-read.csv('../data/anole.svl.csv', row.names=1)
+SVL<-setNames(SVL$svl,rownames(SVL)) ##a named vector for the data.
+
+# Run phylogenetic signal
+phylosig(tree,SVL,method = "lambda", test = TRUE)
+phylosig(tree,SVL,method = "K", test = TRUE)
+physignal(SVL, tree) # same in geomorph
+geomorph:::physignal.z(SVL, tree)  #effect size
+
+

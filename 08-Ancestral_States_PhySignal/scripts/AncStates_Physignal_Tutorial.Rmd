@@ -36,17 +36,17 @@ Note, parts of this tutorial are based on and adapted from that of L. Revell: ht
 ### Download data files
 To run the analyses in this tutorial, please download the following files from our Git-course repository: 
 
-[Phylogeny1](https://github.com/deanadams/MacroevolutionPracticals/08-Ancestral_States_PhySignal/data/anole.gp.tre)
+[Phylogeny1](https://github.com/deanadams/MacroevolutionPracticals/blob/main/08-Ancestral_States_PhySignal/data/anole.gp.tre)
 
-[Phylogeny2](https://github.com/deanadams/MacroevolutionPracticals/08-Ancestral_States_PhySignal/data/anole.svl.tre)
+[Phylogeny2](https://github.com/deanadams/MacroevolutionPracticals/blob/main/08-Ancestral_States_PhySignal/data/anole.svl.tre)
 
-[Data1](https://github.com/deanadams/MacroevolutionPracticals/08-Ancestral_States_PhySignal/data/anole.gp.csv)
+[Data1](https://github.com/deanadams/MacroevolutionPracticals/blob/main/08-Ancestral_States_PhySignal/data/anole.gp.csv)
 
-[Data2](https://github.com/deanadams/MacroevolutionPracticals/08-Ancestral_States_PhySignal/data/anole.svl.csv)
+[Data2](https://github.com/deanadams/MacroevolutionPracticals/blob/main/08-Ancestral_States_PhySignal/data/anole.svl.csv)
 
 Additionally, The R-script for running the code found in this tutorial is found here:
 
-[RScript](https://github.com/deanadams/MacroevolutionPracticals/08-Ancestral_States_PhySignal/scripts/AncStateEstimation.r)
+[RScript](https://github.com/deanadams/MacroevolutionPracticals/blob/main/08-Ancestral_States_PhySignal//scripts/AncStateEstimation.r)
 
 As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
@@ -59,7 +59,7 @@ As before, on your local computer, place them in a folder named 'TutorialData', 
 
 Here we explore methods for estimating ancestral states of discrete characters. First, we bring our data into R:
 
-1. Load the `gieger` and `phytools` package
+1. Load the `gieger` and `phytools` package. Also load the `geomorph` package (for Z-scores of phylogenetic signal)
 1. Read in the tree titled `anole.gp.tre`. This file can be found in the data folder of this tutorial
 2. Use the `read.csv()` function to read in the discrete trait data called `anole.gp.csv`
     + be sure to set `row.names=1`. This makes it so the first column in the `csv` get read as the rownames.
@@ -234,4 +234,10 @@ Each approach gives the same result, how neat is that?
 Many times, it is prudent to incorporate fossil information when available. This is **critically important**, as fossils provide calibration for the remaining estimates. Conceptually, fossils act much like an anchor, and allow one to condition the ancestral estimates on the phylogeny, the model, and the fossils.  An example below (via simulation) shows the difference in estimates with and without 'fossil' priors:
 
 ```{r,known_nodes, eval=TRUE}
+```
+
+### **Evaluating Phylogenetic Signal**
+Finally, let's evaluate the degree of phylogenetic signal in a continuous variable. For this we will return to the *Anolis* body size data and phylogeny. We will then fit the data to the tree under maximum likelihood (ML), optimizing the parameter $\lambda$.  This is one measure of phylogenetic signal. Next we will perform a similar analysis using Blomberg's *Kappa*.  Finally, recall that Collyer et al. (2022) demonstrated a mathematical relationship between $\lambda$ and *Kappa*, and proposed an effect size (Z) for comparing phylogenetic signal across datasets. While we only have one dataset we will calculate the effect size so that one is familiar with the procedure. 
+
+```{r,PhySignal,eval=TRUE}
 ```
