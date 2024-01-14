@@ -10,15 +10,11 @@ knit: (function(inputFile, encoding) {
 ---
 
 
-
-
 ```{r,echo=F}
 
 knitr::read_chunk('AncStateEstimation.R')
 
 ```
-
-
 
 
 ### **Overview**
