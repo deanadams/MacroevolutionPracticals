@@ -14,6 +14,8 @@ tree<-data.pruned$phy
 mydata<-data.pruned$data
 
 ## ----plot_data----
+
+## NOTE: see `plotTree.datamatrix` in phytools for other plotting option
 plot.phylo(tree,show.tip.label = F) ## setting show.tip.label = F prevents the species names from appearing
 
 ## We make a colour key to denote which state gets which color

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dean Adams (dcadams@iastate.edu)" />
 
-<meta name="date" content="2024-01-13" />
+<meta name="date" content="2024-01-14" />
 
 <title>Discrete Trait Phylogenetic Association</title>
 
@@ -354,7 +354,7 @@ display: none;
 <h1 class="title toc-ignore">Discrete Trait Phylogenetic
 Association</h1>
 <h4 class="author">Dean Adams (<a href="mailto:dcadams@iastate.edu" class="email">dcadams@iastate.edu</a>)</h4>
-<h4 class="date">2024-01-13</h4>
+<h4 class="date">2024-01-14</h4>
 
 </div>
 
@@ -480,7 +480,8 @@ by side, <code>V1</code> and <code>V3</code>. We can see that both of
 these traits are binary as they only consist of <span class="math inline">\(1\)</span> and <span class="math inline">\(0\)</span>. We’ll plot each of the states a
 different color for the trait. There are a lot of ways to plot traits on
 a tree, we’ll be using <code>tiplabels()</code> to get the job done</p>
-<pre class="r"><code>plot.phylo(tree,show.tip.label = F) ## setting show.tip.label = F prevents the species names from appearing
+<pre class="r"><code>## NOTE: see `plotTree.datamatrix` in phytools for other plotting option
+plot.phylo(tree,show.tip.label = F) ## setting show.tip.label = F prevents the species names from appearing
 
 ## We make a colour key to denote which state gets which color
 colorkey1 &lt;- c(&#39;red&#39;,&#39;black&#39;) ##trait V1
@@ -699,13 +700,13 @@ trait1_fit_er &lt;-corHMM(phy = tree, data = trt1, rate.cat = 1, rate.mat = trai
 ## Finished. Inferring ancestral states using marginal reconstruction.</code></pre>
 <pre class="r"><code>##The estimated rates
 trait1_fit_er$solution</code></pre>
-<pre><code>##             (1,R1)      (2,R1)
-## (1,R1)          NA 0.008068286
-## (2,R1) 0.008068286          NA</code></pre>
+<pre><code>##            (1,R1)     (2,R1)
+## (1,R1)         NA 0.00806832
+## (2,R1) 0.00806832         NA</code></pre>
 <pre class="r"><code>trait1_fit_ard$solution</code></pre>
 <pre><code>##             (1,R1)      (2,R1)
-## (1,R1)          NA 0.008067988
-## (2,R1) 0.008068135          NA</code></pre>
+## (1,R1)          NA 0.008069375
+## (2,R1) 0.008068575          NA</code></pre>
 <pre class="r"><code>#compare models: logL and AIC
 trait1_fit_er$loglik</code></pre>
 <pre><code>## [1] -5.824139</code></pre>
@@ -715,7 +716,7 @@ trait1_fit_er$loglik</code></pre>
 summary_stat &lt;- -2 * (trait1_fit_er$loglik - trait1_fit_ard$loglik) ## -2 * (model_constrained - model_full)
 ##This is our p-value
 pchisq(summary_stat,df = 1,lower.tail=FALSE ) ##degrees of freedom is the difference in the number of parameters between the two models. In our case 2-1=1</code></pre>
-<pre><code>## [1] 0.9999528</code></pre>
+<pre><code>## [1] 1</code></pre>
 <pre class="r"><code>trait1_fit_er$AIC</code></pre>
 <pre><code>## [1] 13.64828</code></pre>
 <pre class="r"><code>trait1_fit_ard$AIC</code></pre>
