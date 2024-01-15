@@ -1,0 +1,237 @@
+---
+title: "Fitting and Comparing Evolutionary Models: Continuous Data"
+author: "Dean Adams (dcadams@iastate.edu)"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    css: ../../Instructor_Materials/style/styles.css
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "../") })
+---
+
+
+
+```{r,echo=F}
+
+knitr::read_chunk('FitEvolModels.R')
+
+```
+
+
+
+### **Overview**
+Today we explore methods for comparing continuous models of trait evolution. Many 'classic' macroevolutionary hypotheses are based on a particular model of trait change: does the trait evolve rapidly or slowly? Does a trait evolve faster in one sub-lineage as compared to another? Does trait variation evolve quickly early in the history of a lineage? Does a trait evolve to one or more phenotypic optima?
+
+All of these questions can be addressed by fitting different evolutionary models to the data, and determining which displays the highest support. The approach falls squarely in statistical *Model Comparison* methods, where the fit of different models is obtained, and evaluated using various approaches: likelihood ratio tests (LRT) and AIC comparisons being the most common.
+
+**IMPORTANT STATISTICAL NOTE:** Statistical model comparison is of the form: $Y=X\beta + E$, where the data are fit to different $X$ variables (i.e., differing explanatory hypotheses). With evolutionary model comparison, all models are the algebraic form: $Y=1\beta + E$, but where $E$ is modeled using different expected covariance structures (BM, OU1, etc.). Thus the latter fits different error structures to an intercept model, rather than comparing the fit of the data to differing explanatory variables (see Adams and Collyer 2018; 2019).
+
+
+### Learning Objectives
+
+* Appreciate the diversity of trait evolution models and understand the basic concepts of BM, OU, and EB models.
+* Be able to fit BM, OU, and EB models to continuous data. 
+* Compare which models fit best using AIC or log likelihood
+* Understand how to set up models where evolution dynamics differ based on regime shifts
+
+### Download data files
+Today we will use data from the following files: 
+
+[Phylogeny](https://github.com/deanadams/MacroevolutionPracticals/blob/main/12-Fitting_Evol_Models/data/anole.gp.tre)
+
+[Data1](https://github.com/deanadams/MacroevolutionPracticals/blob/main/12-Fitting_Evol_Models/data/anole.gp.csv)
+
+[Data2](https://github.com/deanadams/MacroevolutionPracticals/blob/main/12-Fitting_Evol_Models/data/anole.svl2.csv)
+
+Additionally, The R-script for running the code found in this tutorial is found here:
+
+[RScript](https://github.com/deanadams/MacroevolutionPracticals/blob/main/12-Fitting_Evol_Models/scripts/FitEvolModels.r)
+
+As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
+
+### **Fitting Evolutionary Models**
+Here we explore methods for fitting evolutionary models to continuous characters. First, we bring our data into R:
+
+```{r,read_data, eval=TRUE}
+```
+
+```{r,plot_data,eval=T}
+```
+
+Here we see our phylogeny with the continuous body size character (SVL) mapped to the branches, and displayed as a heat map. We also have several groups that define habitat use (ecomorphs). These are displayed at the tips of the phylogeny. 
+
+#### **BM1: Brownian motion (one group)**
+A useful null model of evolutionary change is Brownian motion. For continuous characters, this is considered a *neutral* model, in the sense that there is no selection included: it simply represents random perturbations of the trait over time. This is akin to what might be expected under random genetic drift. The model assumes that changes are independent from time step to time step, so variance increases over time, but the mean does not change.  An example is below: 
+
+```{r,BM_sim, eval=TRUE}
+
+```
+
+
+Many phylogenetic comparative methods (PCMs) for continuous trait data have Brownian motion as their underlying model. For instance, methods for phylogenetic regression (phylogenetically independent contrasts, phylogenetic generalized least squares, phylogenetic transform), and methods for ancestral state estimation of continuous data (maximum likelihood, squared change parsimony) are all based on the Brownian model. 
+
+To fit this model and many others in R we can use the `fitContinuous()` function.
+
+
+<div class = "func">
+
+<details>
+  <summary> <font size="+2"> `fitContinuous()` </font> </summary>
+ 
+This function fits various models of continuous character evolution to trees. This function has many parameters but we'll be using the following ones:
+
+* $phy$ a phylo object
+* $dat$ data vector for a single trait, with names matching tips in phy
+* $model$ A string with the type of model we will attempt to fit. We will be using the following models:
+    + `"BM"` Brownian motion
+    + `"OU"` Ornstein-Uhlenbeck
+    + `"EB"` Early burst
+    + `"lambda"` Lambda
+    + `"kappa"` Early Burst
+* $bounds$ These place bounds on relevant parameters. This is particularly useful on likelihood surfaces that are long flat ridges, making it difficult for optimization. See examples in the tutorial for usage of $bounds$
+
+This function returns the fit model with parameter estimates and summary statistics. Some elements of interest are:
+
+* $\$lik$ A likelihood function used to compute the likelihood of parameter values for the model
+* $\$opt$ This contains the results of optimization, namely: the resulting parameter estimates, maximum likelihood estimate, AIC, and sample-size corrected AIC (AICC)
+
+</details>
+</div>
+<br></br>
+
+
+```{r, fit_BM, eval=TRUE}
+```
+
+Notice that fitting the data to the phylogeny under the BM1 model provides the likelihood of that fit, its corresponding AIC (and AICc), as well as the parameters of the Brownian motion model: the rate parameter (sigma2), which describes the *pace* of evolutionary change (how fast the trait evolves along the phylogeny), and the phylogenetic mean (the estimate at the root of the phylogeny).
+
+#### **OU1: Ornstein-Uhlenbeck Model with a single optimum**
+Many times, a more realistic model is one containing both selection and drift. This may be found in an OU model. Here, the drift parameter remains, but there is also a selective 'pull' towards an optimum. The further the trait value is from the optimum, the stronger the pull. One can view the consequences of this model with the following simulations: first where the starting value and the optimum are the same (demonstrates the constraining force of the OU), and second when the starting value and optimum are not the same: 
+
+
+```{r,OU_sim, eval=TRUE}
+
+```
+
+Notice the impotant components of the OU model as illustrated here. First, unlike BM where variation increases proportional to time, the OU model displays  'constrained' variation over time. This is because of the 'pull' of selection to the optimum. Second, if the starting value differs from the optimum, there is a shift of the mean over time. This further illustrates the power of selection in this model. To fit an OU1 model for our data, we do the following: 
+
+```{r,OU_fit, eval=TRUE}
+```
+
+As before, the logL, AIC, and parameter estimates are returned. Armed with these, one may compare the OU1 fit to the null-model BM1. This is accomplished using either using a likelihood ratio test (LRT), or by comparing AIC values (recall a difference > 4 is usually treated as supporting the alternative model).
+
+```{r,BM_OU_compare, eval=TRUE}
+
+```
+
+Here we find that under the OU1 model, the fit of the data to the phylogeny is not significantly improved. Thus we prefer the simpler model. 
+
+#### **Other models**
+There are many alternative models that can be envisioned; many of which are easily implemented. In the category of 'single group' models, several common ones include:
+
+1) Brownian motion with a directional trend
+2) Early-burst models (rapid trait diversification early in clade history)
+3) Lambda models (covaration of phylogeny and trait change)
+4) Kappa models (trait change is puncutational and tends to occur at speciation events)
+
+Models 2,3, and 4 are accomplished by adjusting the branch lengths of the phylogeny in some manner. As before, models are fit and then compared using AIC.
+
+```{r,evol_models_geiger, eval=TRUE}
+```
+
+#### **OUM: Multi-group OU model**
+
+The above evolutionary models all assume that the taxa belong to a single 'group.' However, there may be more than one evolutionary optimum, and species may be evolving towards these optima. This requires and OUM approach (multi-group OU model). By convention, groups are referred to as *regimes*. The first step is to assign branches to regimes; commonly known as 'painting' the regimes on the tree. This may be done using some explicit biological hypothesis (e.g., ancestral branches are assumed to be one phenotype, while extant taxa belong to one or more groups). Alternatively, one may use ancestral state estimation to assign ancestral regimes, and then assign branches based on these and some rule of state change. Several examples of both are in Butler & King (2004). 
+
+Another approach is to use stochastic mapping, which is used here. We can fit multi-group OU models using the `OUwie()` function.
+
+
+<div class = "func">
+
+<details>
+  <summary> <font size="+2"> `OUwie()` </font> </summary>
+ 
+This function fits various OU models to trees. We'll primarily be using this function to model regime shifts, each with their own OU parameters and dynamics, as such we won't go over all the parameters but only the ones relevant for our goals
+
+* $phy$ This should be a `simmap` object, the output from `make.simmap()`. See the ancestral state estimation tutorial for guidance on how to make a simmap. Essentially, it simulates some changing regime on the phylogeny.
+* $data$ A data frame with trait and regime information. The trait data.frame must have column entries in the following order: [,1] species names, [,2] current selective regime, and [,3] the continuous trait of interest. 
+* $model$ A string with the type of model we will attempt to fit. We will be using the following models:
+    + `"BM1"` Brownian motion
+    + `"BMS"` Brownian motion with each regime having a different rate parameter
+    + `"OU1"` Ornstein-Uhlenbeck
+    + `"OUM"` Ornstein-Uhlenbeck with each regime having a different optimum
+    + `"OUMV"` Ornstein-Uhlenbeck with each regime having a different optimum and different rate
+
+This function returns the fit model with parameter estimates and summary statistics. Some elements of interest are:
+
+* $\$loglik$ A likelihood function used to compute the likelihood of parameter values for the model
+* $\$AIC$ Akaike information criterion.
+* $\$AICc$ sample-size corrected AIC
+* $\$solution$ Maximum likelihood estimates for the parameters
+
+</details>
+</div>
+<br></br>
+
+
+
+```{r,OUwie_model_basic, eval=TRUE}
+
+```
+
+<div class = "try">
+### Try it out! OUwie over many ancestral state histories
+
+Remember that the ancestral state estimation we maded with the `make.simmap()` function only recreates one possible state history given our discrete trait evolution model when in reality there are infinitely many histories that could generate our data! Here you will try to fit the various models in OUwie with different simmaps to see whether our results are robust to different ancestral state estimates.
+
+1. Create 100 simmaps with ancestral state histories using the `make.simmap()` function. **NOTE** you can do this either in a `for` loop or by modifying the `nsim` argument in the `make.simmap()` function  itself.
+2. For each simmap:
+  + Use the `OUwie()` function to fit the 'BM1', 'OU1', and 'OUM` models to the simmap
+  + Record the AIC for each fit model
+3. Make histograms of the AIC for each model. Which model on average fits the best over all the simmaps? Which model is the most robust to different evolutionary histories (where do we see the smallest variation in AIC)?
+
+</div>
+<br></br>
+
+
+#### **BMM: Multi-group BM model**
+
+Alternatively, there may be multiple rates across the phylogeny. For example, one may wish to test the hypothesis that trait evolution is faster in one group as compared to another (e.g., Do traits evolve faster in island taxa than mainland taxa?). Again groups are assigned, BM1 model and BMM models are fit to the data, and compared using LRT and AIC.
+
+As was done for OU models, we can fit the multi-BM model with the `OUwie()` function by using the argument `model="BMS"` (in this case, `BMS` refers to Brownian Motion for each State).
+
+
+
+```{r,BM_many_rates, eval=TRUE}
+```
+
+#### **Exploratory Models: Identifying Rate Shifts**
+The above multi-group methods (OUM and BMM) are * a priori* methods, in that groups are pre-defined by the evolutionary biologist, and hypotheses tested based on those pre-specified groups. An alternative is to mine the data to identify regions on the phylogeny where putative rate shifts are most evident. Two MCMC Bayesian approaches have been proposed for this (Revell et al. 2012: Eastman et al. 2011).  **These methods are highly exploratory, and are found in the functions 'evol.rate.mcmc' in *phytools*, and the function 'rjmcmc.bm' in *geiger* **.
+
+```{r,Rate_shifts, eval=TRUE}
+```
+
+## Skull Thickness of Fizzgigs
+
+[Fizzgigs](https://www.youtube.com/watch?v=lSnzoeZMljM) are little balls of fur that live in the [Endless Forest](https://darkcrystal.fandom.com/wiki/Endless_Forest) of the [Dark Crystal](https://www.youtube.com/watch?v=9PTjIWyRmls) world. They have four stubby paws that they use to travel short distances but will roll up into a ball for longer journeys They have sharp teeth used for catching and gripping prey and even have a second set of teeth near their uvula. It is said that they have the largest bite radii of the animals in Thra. There is much diversity among the various species of Fizzgigs when considering their bite radii but not much is known how this diversity came to be.
+
+<div class = "try">
+### Try it out! Evolution of biting Fizzgigs
+
+We're going to try and fit various evolutionary models to a phylogenetic tree of Fizzgigs to see how their bite radii might have evolved
+
+1. Use `read.tree()` to read in the tree titled `fizzgig.tre`. This file can be found in the data folder of this tutorial:
+    +  [Phylogeny](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/data/fizzgig.tre)
+    +  [Trait Data](https://eeob-macroevolution.github.io/Practicals/Fitting_Evol_Models/data/fizzgig_data.csv)
+2. Use the `read.csv()` function to read in the data set called `fizzgig_data.csv`. **NOTE** there are two columns in this data set, one labeled `bite` that contains the bit radii and another labeled `type`. For now we'll only need the `bite` information
+3. use `fitContinuous()` to fit various evolutionary models and compare their AICs. Which model fit best? What are the maximum likelihood estimates for that model?
+
+Now, let us suppose some of these Fizzgigs had different diets and that some are insectivores and others are avivores (eats birds). If we believed that these diets affected their bite radii evolution, how would we model it? 
+
+4. Use the `type` information of the `fizzgig_data.csv` to make a simmap of how their diets may have evolved over time.
+5. Use `OUwie()` along with the simmap to test out various multiple-state models. Which fits the best and what might this say about their diets?
+
+
+
+</div>
+<br></br>
