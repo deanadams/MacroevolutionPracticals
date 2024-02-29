@@ -27,7 +27,7 @@ l$message
 x <- runif(1) 
 x
 
-a <- rnorm(50,5,1) 
+a <- rnorm(5000,5,1) 
 plot(a)   
 hist(a)     
 
@@ -80,3 +80,7 @@ node.depth.edgelength(tree)
 depths <- node.depth.edgelength(tree)
 max(depths) - depths
 
+plot(tree, show.tip.label = FALSE)
+nodelabels()
+tiplabels()
+tree$edge
