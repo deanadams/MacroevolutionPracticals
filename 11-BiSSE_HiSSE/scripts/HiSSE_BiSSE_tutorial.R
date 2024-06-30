@@ -53,6 +53,7 @@ sim_parameters
 
 # Create an alternative model w/ equal trait-associated extinction rates  
 constrained_bisse_model <-constrain(bisse_model,mu0 ~ mu1)
+
 # create a set of starting parameters that matches constrained model
 constrained_initial_pars<-initial_pars[-3] 
 # search for optimum
@@ -62,6 +63,13 @@ round(fit_constrained_model$par,digits = 2) ##Round estimates to 2 digits for si
 # Compare the fit of the constrained and unconstrained models
 anova(fit_model,constrained=fit_constrained_model)
 
+#### CONSTRAIN BOTH Mu and LAMBDA
+c2 <- constrain(bisse_model, lambda0 ~ lambda1)
+c2 <- constrain(c2, mu0 ~ mu1)
+c2pars <- initial_pars[-(2:3)] 
+fullconstr <- find.mle(c2,c2pars)
+anova(fit_model,constrained=fullconstr) # WAY DIFFERENT!
+
 # Simulate an independent binary trait on our tree 
 transition_rates<-c(0.5,1)
 secondary_trait <- sim.character(tree = tree_bisse, pars =transition_rates , x0 = 1, model='mk2')
@@ -70,6 +78,7 @@ secondary_trait <- sim.character(tree = tree_bisse, pars =transition_rates , x0 
 # in this case, the bisse model is not the true model of evolution for this trait
 incorrect_bisse_model <- make.bisse(tree_bisse, secondary_trait)
 incorrect_bisse_mle <- find.mle(incorrect_bisse_model, initial_pars)
+incorrect_bisse_mle$lnLik
 
 # Set up a null model where the speciation and extinction rates are the same for each trait
 incorrect_null_bisse_model <- constrain(incorrect_bisse_model, lambda0 ~ lambda1)

@@ -83,16 +83,6 @@ plot(tree,show.tip.label = F)
 tiplabels(pch = 17,col = V1cols)
 tiplabels(pch = 19,col = V2cols,offset = 0.2)
 
-##we set up the same format of data frame as before but now we include two traits: trait 1 and trait 2
-trtset12<-cbind(row.names(mydata),mydata[,1:2])
-
-trait12_model_er <- getStateMat4Dat(trtset12,"ER")  #equal transition rates
-trait12_model_ard <- getStateMat4Dat(trtset12,"ARD")  #All rates different
-
-trait12_model_er
-trait12_model_ard
-
-
 ## ----two_trait_fixed ----
 
 ##coax the full transition matrix by having a data frame with all trait combinations
