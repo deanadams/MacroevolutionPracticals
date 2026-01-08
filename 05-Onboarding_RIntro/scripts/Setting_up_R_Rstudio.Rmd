@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with R for Macroevolution"
-author: "Josh Justison"
+author: "Dean Adams (dcadams@iastate.edu)"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Downloading R
 
-The first thing we need to do is download R, a free statistical programming language. R will be used heavily to perform phylogenetic analyses and visualize data. You can download R [here](https://www.r-project.org/). As of writing this, R is on version 4.3.2 (Eye Holes), we will go over how to download that version. If you already have R installed you may want to consider updating R, directions on this below.
+The first thing we need to do is download R, a free statistical programming language. R will be used heavily to perform phylogenetic analyses and visualize data. You can download R [here](https://www.r-project.org/). As of writing this, R is on version 4.5.2, we will go over how to download that version. If you already have R installed you may want to consider updating R, directions on this below.
 
 ----
 

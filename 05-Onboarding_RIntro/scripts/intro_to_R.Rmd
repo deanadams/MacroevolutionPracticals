@@ -263,6 +263,15 @@ plot(tree, edge.color = rainbow(8))
 ```
 
 
+And still more options
+
+```{r}
+plot(tree, show.tip.label = FALSE)
+nodelabels()
+tiplabels()
+tree$edge
+```
+
 or other types of plots.
 
 ```{r}

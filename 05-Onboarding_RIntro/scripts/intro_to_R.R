@@ -64,6 +64,11 @@ nexus_tree <- read.nexus("nexus.nex")
 plot(tree)
 plot(tree, edge.color = rainbow(8))
 
+plot(tree, show.tip.label = FALSE)
+nodelabels()
+tiplabels()
+tree$edge
+
 par(mfrow=c(1,2))
 plot(tree, type = "cladogram")
 plot(tree, type = "radial")
