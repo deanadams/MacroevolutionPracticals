@@ -30,6 +30,13 @@ plot(tree, type = "cladogram")
 plot(tree, type = "radial")
 par(mfrow=c(1,1))
 
+# Other tree plot components
+plot(tree, show.tip.label = FALSE)
+nodelabels()
+tiplabels()
+tree$edge
+
+
 #Other functions (partial list)
 getMRCA(tree, c("t1", "t3"))
 node.depth.edgelength(tree)

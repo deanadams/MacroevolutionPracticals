@@ -147,6 +147,14 @@ Visualizing trees is another useful function provided by the _ape_ package. By d
 plot(tree)
 ```
 
+And still more options
+
+```{r}
+plot(tree, show.tip.label = FALSE)
+nodelabels()
+tiplabels()
+tree$edge
+```
 
 Other options are available, such as coloring the edges
 
