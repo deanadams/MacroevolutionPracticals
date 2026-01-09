@@ -1,5 +1,10 @@
 # R code for intro to R
 
+#Installing packages
+install.packages("ape")
+install.packages("devtools")
+devtools::install_github('mlcollyer/RRPP', ref = 'develop')
+devtools::install_github('geomorphR/geomorph', ref = 'Stable')
 
 #Assign a value to a variable
 a <- 3

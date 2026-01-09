@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dean Adams (dcadams@iastate.edu)" />
 
-<meta name="date" content="2026-01-08" />
+<meta name="date" content="2026-01-09" />
 
 <title>Getting Started with R for Macroevolution</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Getting Started with R for
 Macroevolution</h1>
 <h4 class="author">Dean Adams (<a href="mailto:dcadams@iastate.edu" class="email">dcadams@iastate.edu</a>)</h4>
-<h4 class="date">2026-01-08</h4>
+<h4 class="date">2026-01-09</h4>
 
 </div>
 
@@ -480,6 +480,17 @@ packages using the Rstudio installer. This can be found in the
 example, you can install the phylogenetics package <code>ape</code>
 using the command <code>install.packages(&quot;ape&quot;)</code>. Each tutorial
 will indicate the required packages.</p>
+</div>
+<div id="advanced-r-package-downloads" class="section level2">
+<h2>Advanced R-package downloads</h2>
+<p>Sometimes we wish to use the very latest version of a package that
+has not yet made its way to CRAN. We do that by installing it from
+Github. We will do this for two packages: <em>geomorph</em> and
+<em>RRPP</em>. For this we must use the <em>devtools</em> package, which
+must also be installed. The code below will be used for this:</p>
+<pre class="r"><code>install.packages(&quot;devtools&quot;)
+devtools::install_github(&#39;mlcollyer/RRPP&#39;, ref = &#39;develop&#39;)
+devtools::install_github(&#39;geomorphR/geomorph&#39;, ref = &#39;Stable&#39;)</code></pre>
 </div>
 <div id="using-r" class="section level2">
 <h2>Using R</h2>

@@ -166,6 +166,8 @@ SVL<-setNames(SVL$svl,rownames(SVL)) ##a named vector for the data.
 phylosig(tree,SVL,method = "lambda", test = TRUE)
 phylosig(tree,SVL,method = "K", test = TRUE)
 physignal(SVL, tree) # same in geomorph
-geomorph:::physignal.z(SVL, tree)  #effect size
+
+### NEED TO FIX THIS
+physignal.z(SVL, tree)  #effect size
 
 

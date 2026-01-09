@@ -79,6 +79,17 @@ Throughout this course you will need to download and install packages needed to 
 
 Additionally, you can install packages in the R terminal. For example, you can install the phylogenetics package `ape` using the command `install.packages("ape")`. Each tutorial will indicate the required packages. 
 
+## Advanced R-package downloads
+
+Sometimes we wish to use the very latest version of a package that has not yet made its way to CRAN.  We do that by installing it from Github.  We will do this for two packages: _geomorph_ and _RRPP_. For this we must use the _devtools_ package, which must also be installed. The code below will be used for this: 
+
+```{r eval=FALSE}
+install.packages("devtools")
+devtools::install_github('mlcollyer/RRPP', ref = 'develop')
+devtools::install_github('geomorphR/geomorph', ref = 'Stable')
+
+```
+
 ## Using R
 
 Next week we will cover some R usage basics. However, it may be helpful to play around with R and get acquainted with the syntax, especially if this is your first time coding. Adam Bard has some good tutorials for various programming languages and it may be helpful to look at his tutorial on [Learning X in Y Minutes, where X=R](https://learnxinyminutes.com/docs/r/). Try running some of the code in the tutorial to get familiar with executing code and looking for outputs, or even just perusing the tutorial to see the specific syntax of R can be useful.

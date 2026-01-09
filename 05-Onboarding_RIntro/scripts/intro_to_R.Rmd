@@ -127,6 +127,24 @@ Finally, you can look at the help for any function by calling `?`
 ?var
 ```
 
+## Installing Packages
+In R, there are various packages that include additional functions. These must be installed locally. These are typically installed from CRAN, the primary R repository. Below is an example for several packages we will use this semester: 
+
+```{r eval=FALSE}
+install.packages("devtools")
+install.packages("phytools")
+install.packages("geiger")
+```
+
+Sometimes we wish to use the very latest version of a package that has not yet made its way to CRAN.  We do that by installing it from Github.  We will do this for two packages: _geomorph_ and _RRPP_. For this we must use the _devtools_ package, which must also be installed. The code below will be used for this: 
+
+```{r eval=FALSE}
+devtools::install_github('mlcollyer/RRPP', ref = 'develop')
+devtools::install_github('geomorphR/geomorph', ref = 'Stable')
+
+```
+
+
 ## Working with Trees using the _ape_ Package
 
 The _ape_ package provides a structure for storing a phylogenetic tree, as well as basic manipulation and plotting functions. The _ape_ structure is used by most R packages which deal with phylogenetic trees, so it is important to understand it.
