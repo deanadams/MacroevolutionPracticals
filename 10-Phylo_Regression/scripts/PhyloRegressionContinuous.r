@@ -85,7 +85,7 @@ C <- vcv.phylo(phy = Pleth_matched$phy)
 #Now we run the analysis:
 library(nlme)
 
-bm_gls<-gls(HL~Hind,correlation = V, data=data.frame(Hind, HL))
+bm_gls<-gls(Hind ~ BodyW,correlation = V, data=data.frame(Hind, BodyW))
 summary(bm_gls)    
 anova(bm_gls)
 
@@ -93,8 +93,8 @@ anova(bm_gls)
 
 library(RRPP)
 ##lm.rrpp, the function used to create the model, requires the data in a specific format. rrpp.data.frame puts the data in that format. It is essentially a data frame in a specific format.
-rdf<-rrpp.data.frame(Hind=as.matrix(Hind),Fore=as.matrix(Fore),Groups=as.matrix(Groups), C=C)
-res.PhyT<-lm.rrpp(Hind~Fore, data = rdf, Cov = C, print.progress = FALSE)
+rdf<-rrpp.data.frame(Hind=as.matrix(Hind),BodyW=as.matrix(BodyW),Groups=as.matrix(Groups), C=C)
+res.PhyT<-lm.rrpp(Hind~BodyW, data = rdf, Cov = C, print.progress = FALSE)
 anova(res.PhyT)   
 res.PhyT$LM$gls.coefficients ## the estimated coefficients of the model
 

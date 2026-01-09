@@ -88,24 +88,6 @@ This function returns the phlyogenetically independent contrasts of the traits
 
 Here we have estimated a correlation of approximately $0.08$, that's notably closer to the true correlation of $0$ when compared to the correlation of the traits without taking the phylogeny into consideration. 
 
-<div class = "try">
-### Try it out! The better estimator
-
-We just went over two ways of computing the correlation between two traits: one that doesn't take the phylogeny into account and one that does. The later should generally be a better estimator of the true correlation as we are accounting for shared ancestry, however, via simulation we can show *why* it is a better estimator. We can simulate trait data many times and compute the correlation using both methods to get a feel for how these estimators tend to act. Try the following:
-
-
-1. Simulate $X$ and $Y$ trait data on `mytree` 10,000 times
-2. for each repetition of trait data simulation:
-    + compute the correlation coefficient $r$ of the $X$ and $Y$ and record the value in a vector
-    + compute $X_{pic}$ and $Y_{pic}$ then calculate their correlation $r_{pic}$ and record the value in a different vector
-3. Make a histogram of the correlations from each method. Additionally, compute the mean and and variance of each vector
-
-What do you notice about the behavior of the correlations $r$ and $r_{pic}$? What is the same? What is different and what does this mean for the quality of these estimators? See discussion in [Rohlf 2006. Evol.](https://doi.org/10.1111/j.0014-3820.2006.tb01229.x) and elsewhere for discourse on the estimates of parameters when conditioning on the phylogeny
-
-</div>
-<br></br>
-
-
 ### **Bringing Trait Data into R**
 Now, say we have our own data and wish to perform a phylogenetic comparative analysis. Our first step is to read the data and the phylogeny into R and 'link' them up. This step is crucial, as we need a way to connect the species trait values in the data matrix with the corresponding branches on the phylogeny. Another important step in this process is pruning. It is very common that the phylogeny has more taxa than the data matrix (because one is utilizing a phylogeny from a broad molecular study), or that the data matrix may contain data for species not represented in the phylogeny. Both types of 'dangling' taxa must be excised from their respective data objects. 
 
@@ -207,7 +189,7 @@ Here we see how well our coviariate of `cars$speed` does at explaining the respo
 
 ### **Using PIC, PGLS, and Phylogenetic Transformation**  {.tabset .tabset-fade .tabset-pills}
 
-You can click each of the buttons to see how to perform phylogenetic regression under each method.
+You can click each of the buttons to see how to perform phylogenetic regression under each method.  Notice that PIC, PGLS, and Phylo-Transform all yield equivalent results!
 
 #### 0: Phylogenetically-Naive Analysis
 
@@ -278,16 +260,6 @@ Here we can see a significant relationship between hindlimb length and forelimb 
 
 
 <div class = "try">
-### Try it out! Are they all the same?
-
-While each method has their pros and cons (e.g. PGLS is good at accommodating various models for trait evolution while phylogenetic transformation is good for multivariate data), we should arrive at the same place regardless of the method we use. Here we will look at the relationship between body size (`SVL`) and head length (`HL`) using PIC, PGLS, and phylogenetic transformation to see whether they all give the same results. Specifically, you should:
-
-1. Perform phylogenetic regression of `HL` on `SVL` using PIC, PGLS, and phylogenetic transformation
-2. use `summary()` and `anova()` to record the F-statistic and the coefficient that describes the effect of `SVL` on `HL` for each method
-3. Perform a regression of `HL` and `SVL`without conditioning on phylogeny
-
-Are the summary statistics and coefficient estimates the same across each method? How do these summary statistics compare to the analysis that isn't conditioned on the phylogeny? Do our conclusions change if we condition on the phylogeny? What conclusions would you make about the relationship between body size and head length?
-
 </div>
 <br></br>
 
