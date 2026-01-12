@@ -162,24 +162,6 @@ The function outputs a `simmap` object that lists how long each branch spent in 
 
 After making many simmaps we summarize by reporting the proportion of the time that each node is in a given state. Again, note that internal nodes are estimated as combinations of different states. This reflects the fact that no single state is 100% likely for those nodes.
 
-<div class = "try">
-#### Try it out! Porgs Revisited
-
-We looked at Porgs in the Discrete Character Evolution tutorial, now we will look at them again and estimate ancestral states
-
-1. Read in the Porg phylogeny and character data. If you need to download them again, you can find them here:
-    + [Porg Tree](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/porg.tre)
-    + [Porg Data](https://eeob-macroevolution.github.io/Practicals/Phylo_Assoc_Discrete/data/porg_data.csv)
-2. Create an 'equal rates' rate matrix and all 'rates different' rate matrix for the porg data.
-3. use `ace()` to estimate ancestral states
-    + What is the likelihood of each state at the root for each model
-4. Plot the ancestral state estimations for each model. How do they compare?
-5. Use the directional model that you created in the Discrete Character Evolution tutorial to create a stochastic mapping.
-6. Plot a summary of your stochastic mappings
-
-</div>
-<br></br>
-
 
 #### **Continuous Characters: Maximum Likelihood**
 For continuous characters, one envisions evolution under a Brownian motion model, which is the embodiment of a Markov process on a continuous scale. Fortunately, the ML algorithm above can accommodate such patterns of character evolution.

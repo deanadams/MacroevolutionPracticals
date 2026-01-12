@@ -38,18 +38,7 @@ Additionally, The R-script for running the code found in this tutorial is found 
 Then, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
 #### **Conceptual Background**
-First, let's recall why it is necessary to consider the phylogenetic relationships among taxa when performing comparative analyses. In macroevolutionary studies, we are often interested in determining how two or more traits covary across a broad set of taxa. In such cases, phenotypic values are often obtained at the species level, and represent the typical value for each species (e.g., mean adult body size). However, we know that species are not independent, as they share an evolutionary history as described by their phylogenetic relationships. The figure below illustrates the issue. Here we see an estimate of the phylogeny for hominins (Straight et al. 2013), which displays the evolutionary relationships among these taxa. From this figure, it is evident that sister species such as *H. sapiens* and *H. ergaster* are most closely related to  one another than, say,  *H. sapiens* and *A. anamensis*, which are more distantly related. Combining the relationships depicted in this phylogeny with Darwin's principle of descent with modification, we can generate the following expectation: that *H. sapiens* and *H. ergaster* are likely to be more similar in the trait values of their phenotypes than are *H. sapiens* and *A. anamensis*. This is because *H. sapiens* and *H. ergaster* are more closely related to one another phylogenetically. 
-
-![Fig 1. Phylogeny of hominins (Straight et al. 2013: A,. J. Phys. Anthropol.).](../figs/HomininTree.png)
-
-Now consider the case where we have measured two traits for a series of primate species, body weight and home range size (Fig. 2). Visually there appears to be a clear relationship between the two traits, but how can we test this empirically?  
-
-
-![Fig 2. Data for body weight and home range size in primates (Harvey and Clutton-Brock 1981: Behav. Ecol. Siociobiol.).](../figs/WeightHomeRange.png)
-
-As a quantitative biologist, one would naturally consider linear regression, and perhaps correlation, to be an appropriate statistical tool in this case. However, using ordinary least squares (OLS) methods, one assumes that the residual error from such models is identical and *independently* distributed. This expectation is expressed mathematically as: *N*(0,1). However, because the data points in Fig. 2 represent species values, we encounter the non-independence issue. In particular, the species are not independent, because they exhibit a shared evolutionary history as described by their phylogeny. 
-
-As such, the expected covariation between taxa is not iid: *N*(0,1). Instead, it is expressed as: *N*(0,**V**) where **V** is the expected covariance matrix described by the phylogeny and the evolutionary model under consideration (termed the *phylogenetic covariance matrix*). It is the non-independence expressed in **V** that must be accounted for during the regression analysis. 
+First recall why it is necessary to consider the phylogenetic relationships among taxa when performing comparative analyses. In short, because species share an evolutionary history, more closely related species are expected to be similar in their trait values due solely to evolutinary descent. Thus, they cannot be treated as independent observations (they are evolutionarily correlated with one another). This can cause downstream challenges with statistical inference of macroevolutionary patterns. 
 
 Numerous analytical methods have been developed to take phylogeny into account, which collectively are termed *phylogenetic comparative methods* (PCMs). DCA prefers to call them the *Phylogenetic Comparative Toolkit*, as a panoply of methods now exists. What links them conceptually is that they all utilize a phylogenetic perspective when evaluating patterns of trait evolution. Mathematically, these methods *condition* the data on the phylogeny during the analysis. Today we will learn how to implement the most commonly used methods for continuous variables: methods for implementing **Phylogenetic Regression**. 
 
@@ -64,7 +53,6 @@ Without considering phylogeny we can see a correlation of about $0.54$, this is 
 
 Now let's condition the data on the phylogeny and see look at the correlation between traits. We can use the `pic()` function to make them independent of the phylogeny, alleviating the issue of traits appearing highly correlated even though solely as a result shared ancestry. 
 
-
 <div class = "func">
 
 <details>
@@ -77,7 +65,6 @@ This function computes the phylogenetically independent contrasts using the meth
 * $phy$ a phylo object
 
 This function returns the phlyogenetically independent contrasts of the traits
-
 
 </details>
 </div>
