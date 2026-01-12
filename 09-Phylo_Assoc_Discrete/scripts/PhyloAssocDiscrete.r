@@ -4,154 +4,47 @@ library(geiger, warn.conflicts=F, quietly=T)
 library(phytools, warn.conflicts=F, quietly=T)
 library(corHMM, warn.conflicts=F, quietly=T)
 
-tree<-read.tree("../data/tree.64.tre",tree.names=T)
-mydata<-read.csv('../data/DiscreteData.csv', row.names=1, header=TRUE)
-head(mydata) ##Head can be used to show the first few rows of a data frame 
+#Read the bonyfish data
+bonyfish.tree <- read.tree(file = "../data/bonyfish.tre")
+print(bonyfish.tree, printle = 3)
 
-#Match data with tree
-data.pruned<-treedata(phy=tree,data = mydata, warnings=FALSE)
-tree<-data.pruned$phy
-mydata<-data.pruned$data
+bonyfish.data <- read.csv(file="../data/bonyfish.csv", row.names = 1,
+                          stringsAsFactors = TRUE)
+head(bonyfish.data)
 
-## ----plot_data----
+## ----plot_bonyfish_data----
+object <- plotTree.datamatrix(bonyfish.tree, bonyfish.data, fsize = 0.5, 
+                            yexp = 1, header = FALSE, xecp = 1.45,
+                            palettes = c("YlOrRd", "PuBuGn"))
+leg <- legend(x = "topright", names(object$colors$spawning_mode),
+              cex = 0.7, pch = 22, pt.bg = object$colors$spawning_mode,
+              pt.cex = 1.5, bty = "n", title = "spawning mode")
+leg<-legend(x=leg$rect$left+4.7,y=leg$rect$top-leg$rect$h,
+            names(object$colors$paternal_care),cex=0.7,
+            pch=22,pt.bg=object$colors$paternal_care,pt.cex=1.5,
+            bty="n",title="paternal care")
 
-## NOTE: see `plotTree.datamatrix` in phytools for other plotting option
-plot.phylo(tree,show.tip.label = F) ## setting show.tip.label = F prevents the species names from appearing
+## ----Association_Test----
 
-## We make a colour key to denote which state gets which color
-colorkey1 <- c('red','black') ##trait V1
-colorkey2 <- c('green','orange') ##trait V3 
-names(colorkey1) <-c(0,1) ##Here we are saying that 0s get red and 1s get black
-names(colorkey2) <-c(0,1) ##Here we are saying that 0s get green and 1s get orange
-V1cols<-colorkey1[as.character(mydata[,1])] ##putting the trait values in as.character() is important!
-V3cols<-colorkey2[as.character(mydata[,3])]
+spawning_mode<-setNames(bonyfish.data[,1],
+                        rownames(bonyfish.data))
+paternal_care<-setNames(bonyfish.data[,2],
+                        rownames(bonyfish.data))
 
+interdependent<-fitPagel(bonyfish.tree,paternal_care,
+                         spawning_mode)
+print(interdependent)
 
-tiplabels(pch = 17,col = V1cols,cex=0.6)
-tiplabels(pch = 19,col = V3cols,offset = 0.2,cex=0.6)
+plot(interdependent,cex.main=1,cex.sub=0.8,
+     cex.traits=0.7,cex.rates=0.7,
+     lwd.by.rate=TRUE,max.lwd=6)
 
-## ----single_trait----
+## ----Directional_Tests----
 
-plot.phylo(tree,show.tip.label = F)
-tiplabels(pch = 17,col = V1cols)
+dependent_care<-fitPagel(bonyfish.tree,paternal_care,
+                         spawning_mode,dep.var="x")
 
-#Set up data. corHMM is picky about how it wants the data formatted
-trt1<-cbind(row.names(mydata),mydata[,1])
+dependent_spawning<-fitPagel(bonyfish.tree,paternal_care,
+                             spawning_mode,dep.var="y")
 
-#Set up initial rate matrices
-trait1_model_er <- getStateMat4Dat(trt1,"ER")  #equal transition rates
-trait1_model_ard <- getStateMat4Dat(trt1,"ARD")  #All rates different
-
-
-## ----single_trait_plot
-trait1_model_er
-trait1_model_ard
-
-plotMKmodel(trait1_model_er$rate.mat,rate.cat = 1)
-plotMKmodel(trait1_model_ard$rate.mat,rate.cat = 1)
-
-
-## ----single_trait_fit----
-
-#Fit models: TRAIT 1
-trait1_fit_er <-corHMM(phy = tree, data = trt1, rate.cat = 1, rate.mat = trait1_model_er$rate.mat)
-trait1_fit_ard <-corHMM(phy = tree, data = trt1, rate.cat = 1, rate.mat = trait1_model_ard$rate.mat)
-
-##The estimated rates
-trait1_fit_er$solution
-trait1_fit_ard$solution
-
-#compare models: logL and AIC
-trait1_fit_er$loglik
-trait1_fit_ard$loglik
-
-##We can formally perform a likelihood ratio test of nested models by doing the following
-summary_stat <- -2 * (trait1_fit_er$loglik - trait1_fit_ard$loglik) ## -2 * (model_constrained - model_full)
-##This is our p-value
-pchisq(summary_stat,df = 1,lower.tail=FALSE ) ##degrees of freedom is the difference in the number of parameters between the two models. In our case 2-1=1
-
-trait1_fit_er$AIC
-trait1_fit_ard$AIC
-
-
-## ---- two_trait ----
-
-##first plot the data
-V1cols<-colorkey1[as.character(mydata[,1])] ##putting the trait values in as.character() is important!
-V2cols<-colorkey2[as.character(mydata[,2])]
-plot(tree,show.tip.label = F)
-tiplabels(pch = 17,col = V1cols)
-tiplabels(pch = 19,col = V2cols,offset = 0.2)
-
-## ----two_trait_fixed ----
-
-##coax the full transition matrix by having a data frame with all trait combinations
-## First get all the unique states for the traits in question
-states1<-unique(mydata[,1])
-states2<-unique(mydata[,2])
-
-traits12_expanded<-expand.grid('species',states1,states2) ##Having some string at the beginning is important! Our data needs the first column to be populated with names, this achieves that
-
-##try making matrices again
-trait12_model_er <- getStateMat4Dat(traits12_expanded,"ER")  #equal transition rates
-trait12_model_ard <- getStateMat4Dat(traits12_expanded,"ARD")  #All rates different
-
-##The full transition matrix. Hot dog!
-trait12_model_er
-trait12_model_ard
-
-plotMKmodel(trait12_model_er$rate.mat,rate.cat = 1)
-plotMKmodel(trait12_model_ard$rate.mat,rate.cat = 1)
-
-
-## ----two_trait_pagel-----
-tr1<-mydata[,1]; names(tr1)<-row.names(mydata)
-tr2<-mydata[,2]; names(tr2)<-row.names(mydata)
-pagel_fit <- fitPagel(tree,x=tr1,y=tr2)
-pagel_fit
-
-## ---- x_dep_y_fit ----
-fitPagel(tree,x=tr1,y=tr2,dep.var = "x")
-
-## ---- y_dep_x_fit ----
-fitPagel(tree,x=tr1,y=tr2,dep.var = "y")
-
-
-## ----two_trait_order----
-
-trait_model_er <- getStateMat4Dat(traits12_expanded,"ER")  #Transition matrix with equal transition rates for to two binary traits
-
-
-##We will use the ER transition matrix as a starting point for our directional model
-trait_model_dir<-trait_model_er
-
-##Give some of the transitions their own rate
-trait_model_dir$rate.mat[1,2]<-2
-trait_model_dir$rate.mat[3,4]<-3
-
-trait_model_dir
-
-## ----two_trait_plot----
-
-
-#Two trait analysis: Order to transitions matters (changes in trait 2 DEPEND on values of trait 1: Maddison 1990)
-#Must define the two models for comparison
-plot.phylo(tree,show.tip.label = F)
-tiplabels(pie = to.matrix(mydata[,3],sort(unique(mydata[,3]))),piecol=c("red", "black"),cex=.3, offset=0)
-tiplabels(pie = to.matrix(mydata[,4],sort(unique(mydata[,4]))),piecol=c("green", "orange"),cex=.3, offset=0.2)
-
-##----two_trait_dir_fit----
-
-traits34<-cbind(row.names(mydata),mydata[,3:4])
-
-trait34_fit_er  <-corHMM(phy = tree, data = traits34, rate.cat = 1, rate.mat = trait_model_er$rate.mat)
-trait34_fit_dir <-corHMM(phy = tree, data = traits34, rate.cat = 1, rate.mat = trait_model_dir$rate.mat)
-
-trait34_fit_er$loglik
-trait34_fit_dir$loglik
-
-
-
-trait34_fit_er$AIC
-trait34_fit_dir$AIC ##Strong preference for trait34_fit_dir 
-
+anova(dependent_care,dependent_spawning,interdependent)
