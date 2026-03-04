@@ -1,126 +1,71 @@
-# BiSSE and HiSSE in R
-# Macroevolution -- EEOB 565
+## ----load_libraries----
+library(diversitree, warn.conflicts=F, quietly=T) 
+library(hisse, warn.conflicts=F, quietly=T)
+library(geiger, warn.conflicts=F, quietly=T)
+library(phytools, warn.conflicts=F, quietly=T)
 
+## ----read_data----
+#Read the grunts data
+gt <- read.tree(file = "../data/grunts.phy")
+print(gt, printlen = 2)
 
-##set the seed for reproducibility
-set.seed(9177207) ##The exponent of the largest known repunit prime. ((10^9177207)-1)/9 is the prime
+gd <- read.csv(file="../data/grunts.csv", row.names = 1,
+                          stringsAsFactors = TRUE)
+head(gd)
 
-# load packages
-library(diversitree)
-library(hisse)
+## ----plot_tree----
+hab <-gd[,1]
+names(hab) <- rownames(gd)
+plotTree(gt, ftype = "i", fsize = 0.7, offset = 1)
+tiplabels(pie=to.matrix(hab,0:1)[gt$tip.label,],
+          piecol = c("white", "black"), cex = 0.5)
+legend("bottomleft", c("non-reef","reef"),
+       pch=21,pt.cex = 1.6, pt.bg = c("white", "black"))
 
-# Simulate tree
-sim_parameters <- c(1.0, 4, 0.7, 0.3, 0.2, 0.8) # True parameter values
-names(sim_parameters)<-c('lambda0','lambda1','mu0','mu1','q01','q10')
-tree_bisse <- tree.bisse(sim_parameters, max.taxa = 100)
+## ----bisse_start----
+bisse.model <- make.bisse(gt,hab)
+p <- starting.point.bisse(gt)
+p
 
-# View details
-tree_bisse
+## ----bisse_run----
+bisse.mle <- find.mle(bisse.model, p)
+bisse.mle$par
+bisse.mle$lnLik
 
-names(tree_bisse) ##See which components exist for our simulated phylogeny.
+## ----bisse_null----
+bisse.null <- constrain(bisse.model, lambda1 ~ lambda0,
+                mu1 ~ mu0)
+bisse.null.mle <- find.mle(bisse.null, p[c(-2,-4)])
+bisse.null.mle$par
+bisse.null.mle$lnLik
 
-# Display the states for each tip
-tree_bisse$tip.state
+## ----bisse_test----
+bisseAnova <- anova(bisse.mle, bisse.null.mle)
+bisseAnova
+aicw(setNames(bisseAnova$AIC, rownames(bisseAnova)))
 
-# Plot the character state history 
-treehistory = history.from.sim.discrete(tree_bisse, 0:1)
-plot(treehistory, tree_bisse, cols = c("red", "blue"))
+## ----hisse_setup----
+hd <- data.frame(Genus.species=rownames(gd),
+                 x=gd[,"habitat"])
+head(hd)
 
-# View the true parameter values
-sim_parameters
+rates.bisse <- TransMatMakerHiSSE(hidden.traits = 0)
+rates.hisse <- TransMatMakerHiSSE(hidden.traits = 1)
+rates.bisse
+rates.hisse
 
-# Create a bisse-model variable with our tree and tip states
-bisse_model = make.bisse(tree_bisse, tree_bisse$tip.state)
-bisse_model
-
-# Compute the likelihood under different parameter values
-## Parameter order: lambda0, lambda1, mu0, mu1, q01, q10 
-bisse_model(c(1.0, 4.0, 0.5, 0.5, 0.2, 0.8))
-bisse_model(c(4.0, 1.0, 0  , 1  , 0.5, 0.5))
-
-# Use greedy search algorithm to find optimum
-initial_pars<-starting.point.bisse(tree_bisse) # provide starting values
-fit_model<-find.mle(bisse_model,initial_pars) # run search algorithm
-
-# View the log likelihood of the optimal model
-fit_model$lnLik
-
-# View the optimal parameters
-round(fit_model$par,digits=2) ##we round to two digits for easier reading
-
-# Compare to true parameters
-sim_parameters
-
-# Create an alternative model w/ equal trait-associated extinction rates  
-constrained_bisse_model <-constrain(bisse_model,mu0 ~ mu1)
-
-# create a set of starting parameters that matches constrained model
-constrained_initial_pars<-initial_pars[-3] 
-# search for optimum
-fit_constrained_model <- find.mle(constrained_bisse_model,constrained_initial_pars)
-round(fit_constrained_model$par,digits = 2) ##Round estimates to 2 digits for simplicity
-
-# Compare the fit of the constrained and unconstrained models
-anova(fit_model,constrained=fit_constrained_model)
-
-#### CONSTRAIN BOTH Mu and LAMBDA
-c2 <- constrain(bisse_model, lambda0 ~ lambda1)
-c2 <- constrain(c2, mu0 ~ mu1)
-c2pars <- initial_pars[-(2:3)] 
-fullconstr <- find.mle(c2,c2pars)
-anova(fit_model,constrained=fullconstr) # WAY DIFFERENT!
-
-# Simulate an independent binary trait on our tree 
-transition_rates<-c(0.5,1)
-secondary_trait <- sim.character(tree = tree_bisse, pars =transition_rates , x0 = 1, model='mk2')
-
-# Initialize a bisse model for the independent trait
-# in this case, the bisse model is not the true model of evolution for this trait
-incorrect_bisse_model <- make.bisse(tree_bisse, secondary_trait)
-incorrect_bisse_mle <- find.mle(incorrect_bisse_model, initial_pars)
-incorrect_bisse_mle$lnLik
-
-# Set up a null model where the speciation and extinction rates are the same for each trait
-incorrect_null_bisse_model <- constrain(incorrect_bisse_model, lambda0 ~ lambda1)
-incorrect_null_bisse_model <- constrain(incorrect_null_bisse_model, mu0 ~ mu1)
-constrained_initial_pars<-initial_pars[c(-1,-3)]
-incorrect_null_bisse_mle <- find.mle(incorrect_null_bisse_model, constrained_initial_pars)
-
-# Compare the two models
-anova(incorrect_bisse_mle, constrained = incorrect_null_bisse_mle)
-
-#### Apply HiSSE model ####
-
-# Construct a transition rate matrix 
-null_rate_matrix <- TransMatMakerHiSSE(hidden.traits = 1,make.null=T) #  hidden.traits=1 specifies the hisse model
-null_rate_matrix
-
-# the hisse package paramterizes the model using transformed parameters
-null_net_turnover <- c(1,1,2,2) # lambda + mu
-null_extinction_fraction <- c(1,1,2,2) # mu/lambda
-
-# Transform the tip state data to the hisse format
-hisse_states <- cbind(names(secondary_trait), secondary_trait)
-
-# perform ML estimation under the hisse null model (note that it takes some time to run this)
-null_hisse <- hisse(phy = tree_bisse, data = hisse_states, hidden.states=TRUE,
-                   turnover = null_net_turnover, eps = null_extinction_fraction,
-                   trans.rate = null_rate_matrix)
-null_hisse
-
-# compare models
-null_hisse$AIC
-AIC(incorrect_bisse_mle)
-AIC(incorrect_null_bisse_mle)
-
-# specify a hisse model based on the DEPENDENT trait (our first trait)
-hisse_states2 <- cbind(names(tree_bisse$tip.state), tree_bisse$tip.state)
-null_hisse2 <- hisse(phy = tree_bisse, data = hisse_states2, hidden.states=TRUE, 
-                   turnover = null_net_turnover, eps = null_extinction_fraction,
-                   trans.rate = null_rate_matrix)
-
-# Compare models
-null_hisse2$AIC
-AIC(fit_model)
-AIC(fit_constrained_model)
-
+## ----hisse_run----
+#NOTE: sann = FALSE and bounded.search = FALSE for tutorial runtime
+bisse.hmle <- hisse(gt,hd,turnover = c(1,2),
+                eps = c(1,2), hidden.states = FALSE,
+                trans.rate = rates.bisse, 
+                sann = FALSE, bounded.search = FALSE)
+#NOTE: sann = FALSE and bounded.search = FALSE for tutorial runtime
+hisse.hmle <- hisse(gt,hd,turnover = c(1,1,2,2),
+                    eps = c(1,1,2,2), hidden.states = TRUE,
+                    trans.rate = rates.hisse,
+                    sann = FALSE, bounded.search = FALSE)
+bisse.hmle
+hisse.hmle
+bisse.hmle$AIC
+hisse.hmle$AIC
