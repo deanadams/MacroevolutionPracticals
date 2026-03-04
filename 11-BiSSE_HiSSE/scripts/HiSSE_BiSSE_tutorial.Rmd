@@ -31,13 +31,13 @@ This tutorial is intended to describe how we investigate whether patterns of spe
 ### Download data files
 To run the analyses in this tutorial, we will need several files Chapter 11 of Revell and Harmon, 2022 (Phylogenetic Comparative Methods in R). Please download them from our Git-course repository: 
 
-[Grunts Phylogeny](https://github.com/deanadams/MacroevolutionPracticals/blob/main/11-BiSSE_HiSSE/data/grunts.tre)
+[Grunts Phylogeny](https://github.com/deanadams/MacroevolutionPracticals/blob/main/11-BiSSE_HiSSE/data/grunts.phy)
 
 [Grunts Data](https://github.com/deanadams/MacroevolutionPracticals/blob/main/11-BiSSE_HiSSE/data/grunts.csv)
 
 Additionally, The R-script for running the code found in this tutorial is found here:
 
-[RScript](https://github.com/deanadams/MacroevolutionPracticals/blob/main/11-BiSSE_HiSSE/scriptsHiSSE_BiSSE_tutorial.R)
+[RScript](https://github.com/deanadams/MacroevolutionPracticals/blob/main/11-BiSSE_HiSSE/scripts/HiSSE_BiSSE_tutorial.R)
 
 As before, on your local computer, place them in a folder named 'TutorialData', which is found in the same directory as this tutorial. 
 
