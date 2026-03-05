@@ -89,8 +89,6 @@ fit.K<-fitContinuous(tree, svl, model="kappa")   #Early-burst model
 c(fit.BM1$opt$aic,fit.BMtrend$opt$aic,fit.EB$opt$aic,fit.lambda$opt$aic,fit.OU1$opt$aic)
   #NOTE: none of these generate dAIC > 4.  So go with simplest model (BM1)
 
-
-
 ## ----OUwie_model_basic----
 
 data<-data.frame(Genus_species=names(svl),Reg=gp,X=svl)  #input data.frame for OUwie
@@ -134,12 +132,11 @@ ave.rates(tree,post.splits,extract.clade(tree, node=post.splits$node)$tip.label,
 BM.RJMC<-rjmcmc.bm(phy = tree,dat = svl)
 #Run again for plotting
 r <- paste(sample(letters,9,replace=TRUE),collapse="")
-rjmcmc.bm(phy=tree, dat=svl, prop.width=1.5, ngen=20000, samp=500, filebase=r, simple.start=TRUE, type="rbm")
+run2 <- rjmcmc.bm(phy=tree, dat=svl, prop.width=1.5, ngen=20000, samp=500, filebase=r, simple.start=TRUE, type="rbm")
 outdir <- paste("relaxedBM", r, sep=".")
 ps <- load.rjmcmc(outdir)
-plot(x=ps, par="shifts", burnin=0.25, legend=TRUE, show.tip=FALSE, edge.width=2,type='fan')
 
-
+p.out <- plot(x=ps, par="shifts", burnin=0.25, legend=TRUE, show.tip=FALSE, edge.width=2,type='fan')
 
 ## ----lecture_lambda----
 

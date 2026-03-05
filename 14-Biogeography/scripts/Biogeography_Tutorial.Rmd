@@ -1,5 +1,5 @@
 ---
-title: "Multivariate Phylogenetic Comparative Methods"
+title: "Biogeography"
 author: "Dean Adams (dcadams@iastate.edu)"
 date: "`r Sys.Date()`"
 output: 
@@ -11,12 +11,21 @@ knit: (function(inputFile, encoding) {
 
 ```{r,echo=F}
 
-knitr::read_chunk('MultivariatePCMs.R')
+knitr::read_chunk('Biogeography.R')
 
 ```
 
 ### **Overview**
+asdfasdf
 Today we examine how one can perform phylogenetic comparative analyses on multivariate datasets. For this, the phenotypic data (Y) is a N x p matrix of phenotypic values for N species, across p trait dimensions. These p-dimensions could be a set of univariate traits (e.g., length, width, height, etc.) or they could represent a multi-dimensional trait encoded by multiple numbers (e.g., shape from geometric morphometric methods). The goal is to evaluate patterns in the response variables (Y) while conditioning the data on the phylogeny. In other words, we wish to perform macroevolutionary analyses via phylogenetic comparative methods, but do so on multivariate data. 
+
+To do this, we require the package `BioGeoBEARS`. This is not on CRAN, so we must install from Github: 
+
+```{r,echo=F}
+devtools::install_github('nmatzke/BioGeoBEARS')
+```
+
+
 
 ### Download data files
 Today we will use data from within the package `geomorph`, as well as data from the following files: 

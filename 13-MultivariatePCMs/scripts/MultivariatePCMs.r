@@ -1,5 +1,6 @@
 ## ----Ordination_prep ----
 library(geomorph)
+library(mvSLOUCH)
 data(plethspecies) 
 Y.gpa <- gpagen(plethspecies$land, print.progress = F)    #GPA-alignment
 
@@ -58,6 +59,11 @@ PS.shape <- physignal(A=Y,phy=plethtree,iter=999, print.progress = FALSE)
 summary(PS.shape)
 plot(PS.shape)
 
+## ----dim_phylo_signal----
+PS.dim <- physignal.eigen(Y = Y, phy = plethtree)
+PS.dim
+plot(PS.dim)
+
 ## ----evol_rates----
 ER<-compare.evol.rates(A=Y, phy=plethtree,gp=groups,iter=999, print.progress = FALSE)
 summary(ER)   #significantly higher rate of morphological evolution 'large' Plethodon
@@ -68,11 +74,27 @@ EMR<-compare.multi.evol.rates(A=Y,gp=var.gp, Subset=TRUE, phy= plethtree,iter=99
 summary(EMR) #Limb traits evolve faster than head traits
 plot(EMR)
 
-## ----pleth_read ----
-data("plethspecies")
-pleth_tree<-plethspecies$phy
-landmarks<-plethspecies$land
-procD_landmarks <- gpagen(landmarks)
+## ----evol_modes----
+BM.pleth <- BrownianMotionModel(phyltree = plethtree, mData = Y)
+BM.pleth$ParamSummary$LogLik
 
+gp.anc <- ace(x = groups, phy = plethtree, 
+            type = "discrete", method = 'ML')
+colorkey <- c("black","red")
+names(colorkey) <- colnames(gp.anc$lik.anc) 
+tip_cols<-colorkey[as.character(groups)] 
 
+plot(plethtree)
+nodelabels(pie=gp.anc$lik.anc,piecol=colorkey,cex=0.5)
+tiplabels(pch=19,col=tip_cols)
+legend(x='bottomleft',legend = names(colorkey),fill=colorkey)
 
+#Regimes
+anc.states <- colnames(gp.anc$lik.anc)[max.col(gp.anc$lik.anc)]
+all.states <- c(as.character(groups), anc.states)
+branch.regime <- all.states[plethtree$edge[,2]]
+OU.pleth <- mvslouchModel(phyltree = plethtree, mData = Y, 
+                          regimes = branch.regime, kY = (ncol(Y)-1))
+#Compare
+BM.pleth$ParamSummary$aic
+OU.pleth$FinalFound$ParamSummary$aic
