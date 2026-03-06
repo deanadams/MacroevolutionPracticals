@@ -60,5 +60,60 @@ Notice that all species are geographically-restricted to one or two regions of t
 
 ### **DEC Analysis**
 
-Now let's run a DEC analysis, where we describe biogeographic shifts across the phylogeny in terms of dispersal, extinction, and cladogenesis. 
+Now let's run a DEC analysis, where we describe biogeographic shifts across the phylogeny in terms of dispersal, extinction, and cladogenesis. One quirk with `BioGeoBEARS` is that unlike most `R`-packages where data are loaded into the `R` environment, This package reads directly from data files. So the input looks a bit different from what we've seen in earlier tutorials. Notice that on your computer, `BioGeoBEARS` spits out considerable output during the analysis. For ease of presentation that has been suppressed in this tutorial. 
 
+```{r,run_dec, eval=TRUE, results='hide'}
+
+```
+
+```{r,res_dec, eval=TRUE}
+
+```
+
+Here is the optimized output: 
+
+- p1 = the disperal rate
+- p2 = local extinction rate
+- value = logL
+
+Now let's plot the results graphically: 
+
+```{r,plot_dec, eval=TRUE}
+
+```
+
+This shows us that Region C (South America) is the most likely ancestral area for the group.
+
+### **DEC+J Analysis**
+
+Now let's consider the DEC+J model. This includes dispersal, extinction, cladogenesis, and jump-speciation (where a lineage disperses to a new location and simultaneously speciates). 
+
+To implement the model, let's use our DEC parameters as the starting point for DEC+J: 
+
+```{r,run_decj, eval=TRUE, results='hide'}
+
+```
+
+```{r,res_decj, eval=TRUE}
+
+```
+
+Here is the optimized output. As before, p1 = the disperal rate, p2 = local extinction rate, and now p3 = the jump speciation rate. 
+
+Now let's plot the results graphically: 
+
+```{r,plot_decj, eval=TRUE}
+
+```
+
+Notice that similar to the DEC model, the ancestral area for the group is hypothesized to be C (South America). However, hypothesized area reconstructions within the phylogeny do differ between the two models. 
+
+### **Model Comparison**
+
+Because some details differ we may wish to formally perform a model comparison to deterimine which model confers the stronger statistical support. 
+
+```{r,model_compare, eval=TRUE}
+
+```
+
+Here we see that the DEC+J model has much stronger support than the DEC model. Thus, we reject DEC in favor of a model that also includes jump speciation. 
