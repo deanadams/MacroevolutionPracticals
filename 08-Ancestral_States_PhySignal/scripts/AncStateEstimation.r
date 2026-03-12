@@ -1,4 +1,4 @@
-#Analyses for Tutorial 06: Ancestral State Estimation in R
+#Analyses for Tutorial 08: Ancestral State Estimation in R
   #Parts of this tutorial are based on that of L. Revell: http://www.phytools.org/eqg2015/asr.html
 
 ## ----read_data----
