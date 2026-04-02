@@ -107,21 +107,6 @@ This function returns a list containing the trimmed phylogeny and data. If the l
 ```{r,read_data1, eval=TRUE}
 ```
 
-<div class = "try">
-### Try it out! Hydromantes Data Matching
-
-We were able to match our Plethodontid trait data to our salamander phylogeny, trimming both so that they contain the same species. We can now find the trimmed phylogeny in `Pleth_matched$phy` and trimmed data in `Pleth_mathched$data`. we also have a dataset of Hydromantes salamanders. Try matching the salamander tree to the Hydromantes dataset:
-
-1. read in the Hydromantes dataset. The file is named `HydromantesMns.csv` and can be found in the `data` folder.
-2. read in the salamander tree. The file is named `Mander.tre` and can be found in the `data` folder.
-3. use `treedata` to sync up the two elements. 
-
-How many species were in the Hydromantes dataset before trimming? How many tips were on the salamander tree before trimming? How many species are in the matched dataset? Which species was/were removed from the Hydromantes dataset? Try plotting the trimmed Hydromantes phylogeny and using the `tiplabels()` function to plot head length on the phylogeny (`?tiplabels` may be helpful for learning how to use this function). 
-
-</div>
-<br></br>
-
-
 ### **Methods for Implementing Phylogenetic Regression** 
 
 Now it is time to put it all together and perform a phylogenetic comparative analysis. Using what we have learned, we will use the chronogram and a matrix of quantitative data Plethodontid salamanders. In this case, the data are a set of continuous linear measurements representing morphology. We will perform a bivariate regression of various traits to evaluate the evolutionary association between them, in particular we will be looking at body width (`BodyW`), hindlimb length (`Hind`),forelimb length (`Fore`), head length (`HL`), and body size (`SVL`). However, before we look at the different methods for phylogenetic regression, it may be useful to familiarize ourselves with some of the jargon and functions that are used across methods.
@@ -265,31 +250,6 @@ A second procedure using phylogenetic transformation and permutation (RRPP). Her
 
 
 Remember, phylogenetic ANOVA via simulation (Garland et al. 1993) does *not* condition the data on the phylogeny. It uses OLS ANOVA followed by BM simulations for possible results. This is why the F-ratio differs in the first method above as compared to the other two approaches (PGLS and phylogenetic transform). Recall also from lecture that the distribution of F-ratios and significance levels, do not match using the Garland et al. procedure. However, the latter two methods *do* condition the data on the phylogeny during the analysis, and match one another perfectly. 
-
-#### Phylogenetic Signal
-Another question one commonly asks is: "To what extent does my data display phylogenetic signal?"  Generally speaking, phylogenetic signal is the degree to which trait similarity reflects phylogenetic relatedness. That is, it describes the extent to which closely related species are similar in their trait values. Several methods have been proposed for this, the two most common of which are K (kappa: Blomberg et al. 2003; Adams, 2014), and lambda (Pagel 1994). Here we use the former method. We can even test whether there is a significant amount of phylogenetic signal via permutation. We can accomplish this with either the `phylosig` function from the `phytools` package or the `physignal` function from the `geomorph` package.
-
-```{r,phylo_signal, eval=TRUE}
-```
-
-<div class = "try">
-### Try it out! Where's the signal?
-
-
-We've fit various models to both our Hydromantes and Plethodontid datasets but it may be worth asking: do we have trait similarity as a result of phylogeny? In other words we want to evaluate phylogenetic signal to determine whether the phylogeny is an important factor when considering the evolution of various traits on these groups. Specifically, we will ask this for the `SVL` trait of our Plethodontid dataset and the `HeadLength` trait of our Hydromantes dataset. try the following:
-
-
-1. Evaluate phylogenetic signal of `SVL` on Plethodontids
-    + compute the phylogenetic signal K
-    + Perform a hypothesis test using permutation to assess whether there is a significant amount of phylogenetic signal
-2. Evaluate phylogenetic signal of `HeadLength` on Hydromantes
-    + compute the phylogenetic signal K
-    + Perform a hypothesis test using permutation to assess whether there is a significant amount of phylogenetic signal
-
-Is there phylogenetic signal? which trait has more signal?  **NOTE: A formal test comparing the strength of phylogenetic signal requires an effect size (Z-score): see Collyer et al. 2022: MEE)**
-
-</div>
-<br></br>
 
 #### Additional Simulation Approaches
 Sometimes we may wish to simulate data with a known correlation between traits under Brownian motion. In this case, we cannot simulate each trait separately, as that is tantamount to simulating data with no correlation. 

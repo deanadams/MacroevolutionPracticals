@@ -20,11 +20,6 @@ cor(X_pic,Y_pic)
 library(ape)	
 library(geiger)
 
-#Here is a large time-dated molecular phylogeny (a chronogram):
-ManderTree<-read.tree("../data/Mander.tre",tree.names=T)
-plot(ManderTree)
-
-
 #Read in data, phylogeny, and match/prune them to one another
 ManderTree<-read.tree("../data/Mander.tre",tree.names=T)
 plot(ManderTree)
@@ -43,20 +38,6 @@ BodyW<-Pleth_matched$data[,5]
 Fore<-Pleth_matched$data[,6]
 Hind<-Pleth_matched$data[,7]
 Groups<-as.factor(Pleth_matched$data[,12]);names(Groups)<-rownames(Pleth_matched$data) ##Store the groups and name the vector according to the samples
-
-
-
-## ---- read_data2 ----
-
-
-#Now read in data for species in the genus Hydromantes
-Hyd_dat<-read.csv("../data/HydromantesMns.csv", header=TRUE, row.names = 1)
-Hyd_dat  
-
-
-Hydro_matched<-treedata(phy=ManderTree,data = Hyd_dat, warnings=FALSE)
-plot(Hydro_matched$phy)  #We have matched data to the tree!
-
 
 ## ---- phylo_naive ----
   
@@ -106,16 +87,6 @@ aov.phylo(SVL~Groups, phy = Pleth_matched$phy) ##Not the same analysis
 anova(lm.rrpp(SVL~Groups, data = rdf, Cov = C, print.progress = FALSE))
 anova(gls(SVL~Groups,correlation = V, data=data.frame(SVL, Groups)))  #identical to Phylo.transform
 
-
-## ---- phylo_signal ----
-
-####Phylogenetic Signal
-library(geomorph)
-phylosig(tree=Pleth_matched$phy, x=SVL, method="K", test=T, nsim=1000)  #phytools
-  res<-physignal(A=SVL,phy = Pleth_matched$phy, print.progress = FALSE)   #geomorph
-summary(res)  #the same, but the latter method (from geomorph) can accomodate multivariate data
-plot(res)
-
 ## ---- OLS_cor_sim ----
 ####Additional Simulation Approaches
 #Simulate correlated data
@@ -133,13 +104,3 @@ R<-matrix(0.7, nrow=2,ncol=2); diag(R)<-1 ## This matrix describes the covariati
 R
 dat.BM<-sim.char(phy = mytree,par = R,nsim = 1)[,,1]
 plot(dat.BM, asp=1)
-
-## ----Practical Questions ----
-
-#To apply what you have learned, please do the following:
-
-#1: Simulate a phylogeny (or read one into R)
-#2: Simulate two continuous traits with some known correlation between them
-#3: Estimate the evolutionary association of the traits, conditioned on the phylogeny, using one of the methods you have learned
-
-#Upload your code to the assignment center on Canvas 
